@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 国内使用指南（2026）：配置、模型 ID、省钱与报错排查</title>
+  <meta name="description" content="Claude Code 国内怎么用：5 分钟配置 ANTHROPIC_BASE_URL 和 Key，钉住 Opus 5.5 / Sonnet 5.5 模型 ID，看懂缓存如何决定账单，附常见报错排查、账单计算器和配置生成器。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 国内使用指南（2026）">
+  <meta property="og:description" content="5 分钟配置、模型 ID、省钱要点和常见报错，附账单计算器与配置生成器。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/site.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Claude Code 国内怎么配置第三方 API？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "装好 Node.js 22+ 和 Claude Code，把 ANTHROPIC_BASE_URL 指向支持 Anthropic 原生协议的平台（不要带 /v1），Key 填进 ANTHROPIC_AUTH_TOKEN，并用 ANTHROPIC_MODEL 等变量钉住模型 ID。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "ANTHROPIC_AUTH_TOKEN 和 ANTHROPIC_API_KEY 有什么区别？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "ANTHROPIC_AUTH_TOKEN 发 Authorization: Bearer 请求头，ANTHROPIC_API_KEY 发 x-api-key。两个同时设容易用错 Key，只留一个，推荐 ANTHROPIC_AUTH_TOKEN。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Claude Code 账单为什么比预期高？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Claude Code 每一轮都会重发整段上下文，缓存命中率决定账单。会话中途改 CLAUDE.md、增删 MCP 工具、来回切模型都会让缓存断掉，下一轮整段按全价计。"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="./" aria-current="page">指南</a>
+        <a href="calculator/">账单计算器</a>
+        <a href="config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">对应 Claude Code 2.1.284 · 数据截至 2026 年 10 月</span>
+      <h1>Claude Code 国内使用指南（2026）</h1>
+      <p class="lead">第三方 API 怎么配、模型 ID 怎么填、账单为什么比预期高、报错怎么查，按顺序讲清楚。所有配置对任何支持 Anthropic 原生协议的平台通用。</p>
+      <div class="btn-row">
+        <a class="btn primary" href="config/">生成我的配置</a>
+        <a class="btn" href="calculator/">算一算我的账单</a>
+        <a class="btn" href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">完整指南（GitHub）</a>
+      </div>
+    </section>
+
+    <section class="card" id="answer">
+      <h2>一句话答案</h2>
+      <p>装好 <strong>Node.js 22+</strong> 和 <strong>Claude Code</strong>，把 <code>ANTHROPIC_BASE_URL</code> 指向一个支持 Anthropic 原生协议的 API 平台，Key 填进 <code>ANTHROPIC_AUTH_TOKEN</code>，就能用。真正决定体验和账单的是另外两件事：<strong>钉住模型 ID</strong>，<strong>别让缓存断掉</strong>。</p>
+      <div class="code"><pre><code>npm i -g @anthropic-ai/claude-code                      # 需要 Node.js 22+
+export ANTHROPIC_BASE_URL=https://api.teamorouter.com   # 换成你的平台地址，不要带 /v1
+export ANTHROPIC_AUTH_TOKEN=你的Key
+export ANTHROPIC_MODEL=claude-opus-5-5
+claude</code></pre></div>
+      <p class="note">上面只在当前终端生效。永久生效、Windows 和 <code>settings.json</code> 写法见下一节，或直接用 <a href="config/">配置生成器</a>。</p>
+    </section>
+
+    <section class="card" id="setup">
+      <h2>5 分钟配置</h2>
+      <ol class="steps">
+        <li>
+          <strong>安装 Claude Code</strong>
+          装 <a href="https://nodejs.org/zh-cn/download/">Node.js</a> 22 或更新版本（Windows 另装 <a href="https://git-scm.com/download/win">Git for Windows</a>），然后：
+          <div class="code"><pre><code>npm i -g @anthropic-ai/claude-code
+# npm 慢的话临时用国内镜像
+npm i -g @anthropic-ai/claude-code --registry=https://registry.npmmirror.com</code></pre></div>
+          <code>claude --version</code> 确认版本。Sonnet 5.5 需要 2.1.284 以上，旧版本先 <code>claude update</code>。
+        </li>
+        <li>
+          <strong>写配置（推荐 settings.json，三平台通用）</strong>
+          文件在 <code>~/.claude/settings.json</code>（Windows：<code>C:\Users\&lt;用户名&gt;\.claude\settings.json</code>）。已有文件时只合并 <code>env</code> 里这几项，不要整个覆盖。
+          <div class="code"><pre><code>{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.teamorouter.com",
+    "ANTHROPIC_AUTH_TOKEN": "你的Key",
+    "ANTHROPIC_MODEL": "claude-opus-5-5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5"
+  }
+}</code></pre></div>
+          想用 shell 环境变量或 Windows <code>setx</code>，用 <a href="config/">配置生成器</a> 选系统，一键生成可复制的配置。
+        </li>
+        <li>
+          <strong>验证</strong>
+          新开终端运行 <code>claude</code>：不再要求登录 Anthropic 账号，说明 Key 已被读到；输入 <code>/status</code> 看 base URL 是不是你填的地址，<code>/model</code> 看 opus / sonnet / haiku 是否指向钉住的 ID。
+        </li>
+      </ol>
+      <div class="callout warn">
+        <p><strong>三个最常见的坑</strong></p>
+        <ul>
+          <li><code>ANTHROPIC_BASE_URL</code> <strong>不带 <code>/v1</code></strong>，Claude Code 会自己拼 <code>/v1/messages</code>，多写了会 404。</li>
+          <li><code>ANTHROPIC_AUTH_TOKEN</code> 和 <code>ANTHROPIC_API_KEY</code> <strong>只留一个</strong>，推荐前者；机器上留着旧的 <code>ANTHROPIC_API_KEY</code> 容易「填了新 Key 用的却是旧 Key」。</li>
+          <li>模型 ID 用<strong>短横线</strong>：<code>claude-opus-5-5</code>，不是 <code>claude-opus-5.5</code>。</li>
+        </ul>
+      </div>
+      <p class="note">同一个变量既在系统 / 终端环境变量里、又在 <code>settings.json</code> 的 <code>env</code> 里时，环境变量优先（Claude Code 2.1.284 实测）。改了 <code>settings.json</code> 不生效，多半是 <code>~/.zshrc</code> 或 Windows 用户环境变量里还留着旧值。</p>
+    </section>
+
+    <section class="card" id="models">
+      <h2>钉住模型别名</h2>
+      <p>Claude Code 里的 <code>opus</code>、<code>sonnet</code>、<code>haiku</code> 是别名。不钉住时，它按自己版本内置的默认 ID 去请求；平台没有这个 ID 就报 400 / 404，或者落到旧模型上。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>变量</th><th>作用</th><th>建议值</th></tr></thead>
+          <tbody>
+            <tr><td><code>ANTHROPIC_MODEL</code></td><td>启动时默认用的模型</td><td><code>claude-opus-5-5</code></td></tr>
+            <tr><td><code>ANTHROPIC_DEFAULT_OPUS_MODEL</code></td><td><code>/model</code> 里 opus 指向的 ID</td><td><code>claude-opus-5-5</code></td></tr>
+            <tr><td><code>ANTHROPIC_DEFAULT_SONNET_MODEL</code></td><td>sonnet 指向的 ID</td><td><code>claude-sonnet-5-5</code></td></tr>
+            <tr><td><code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code></td><td>haiku 指向的 ID，用于会话标题、摘要等后台小任务，最容易被忽略</td><td><code>claude-haiku-4-5</code></td></tr>
+            <tr><td><code>CLAUDE_CODE_SUBAGENT_MODEL</code></td><td>子代理用的模型</td><td><code>claude-sonnet-5-5</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">官方价：Opus 5.5 输入 / 输出 $4 / $20、缓存读 $0.20；Sonnet 5.5 输入 / 输出 $2 / $10（美元 / 每百万 token）。其他模型和最新价格见 <a href="calculator/">账单计算器</a>，价格数据每日同步，以官网价格页为准。不同平台的 ID 可能有差异，以平台模型列表为准。</p>
+    </section>
+
+    <section class="card" id="save">
+      <h2>省钱要点：账单主要看缓存</h2>
+      <div class="stats">
+        <div class="stat"><div class="label">Opus 5.5 每次请求</div><div class="value">$0.179</div><div class="sub">按官方价折算</div></div>
+        <div class="stat accent"><div class="label">缓存读占全部输入</div><div class="value">92.1%</div><div class="sub">Opus 5.5 缓存读只要输入价的 5%</div></div>
+        <div class="stat"><div class="label">平均上下文</div><div class="value">约 24 万</div><div class="sub">token / 次</div></div>
+        <div class="stat"><div class="label">平均输出</div><div class="value">2,110</div><div class="sub">token / 次</div></div>
+      </div>
+      <p class="note">数据来源：TeamoRouter 平台 2026 年 10 月 7 日至 13 日，Claude Code 客户端调用 Opus 5.5 的约 20.6 万次成功请求（399 位用户）。金额按 Anthropic 官方价折算，与任何平台的实际售价无关。</p>
+      <p>Claude Code 每一轮都会把系统提示、CLAUDE.md、工具定义和历史对话整段重发。这 24 万 token 如果全按 Opus 5.5 输入价 $4 / 百万计，光输入就是 $0.96，是实际平均每次 $0.179 的五倍多。<strong>缓存命中率决定账单。</strong></p>
+      <ol>
+        <li><strong>会话中途别改 CLAUDE.md，别增删 MCP 工具。</strong>重发内容的开头一变，下一轮整段都按全价算。</li>
+        <li><strong>一个会话只用一个模型。</strong>缓存按模型分开，<code>/model</code> 来回切，每次切完的第一轮都是全价。</li>
+        <li><strong>haiku 别名钉一个便宜的小模型</strong>，不设的话后台小任务会请求平台可能没有的 ID。</li>
+        <li><strong>子代理用 Sonnet 5.5，主线程用 Opus 5.5。</strong><code>CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-5-5</code>，单价只有 Opus 5.5 的一半。</li>
+        <li><strong>思考档按任务调，不要常驻最高档。</strong>思考 token 按输出价计费，小活用 low / medium。</li>
+        <li><strong>及时 <code>/compact</code>，做完就 <code>/clear</code> 或开新会话。</strong>上下文越长，每轮重发越多。</li>
+        <li><strong>长时间、多轮的编码任务放在走 Anthropic 原生协议的工具里做。</strong>OpenAI 兼容协议接入通常吃不到缓存。</li>
+      </ol>
+      <div class="btn-row">
+        <a class="btn primary" href="calculator/">用账单计算器看看缓存断了多花多少</a>
+      </div>
+    </section>
+
+    <section class="card" id="errors">
+      <h2>常见报错</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>现象</th><th>常见原因</th><th>怎么办</th></tr></thead>
+          <tbody>
+            <tr><td>启动后仍要求登录</td><td>环境变量没被读到</td><td>新开终端；VS Code 内置终端要重启整个 VS Code；或改用 settings.json</td></tr>
+            <tr><td>401 / Invalid API key</td><td>Key 复制不全；机器上还留着旧的 <code>ANTHROPIC_API_KEY</code></td><td>重新复制 Key；删掉 <code>ANTHROPIC_API_KEY</code>，只保留 <code>ANTHROPIC_AUTH_TOKEN</code></td></tr>
+            <tr><td>404</td><td><code>ANTHROPIC_BASE_URL</code> 多写了 <code>/v1</code></td><td>只写到域名</td></tr>
+            <tr><td>400 / 模型不存在</td><td>ID 写成了点号；客户端太旧；平台没有这个 ID</td><td>用短横线 ID；<code>claude update</code>；对照平台模型列表</td></tr>
+            <tr><td>会话标题、摘要偶发失败</td><td><code>haiku</code> 别名没钉住</td><td>设置 <code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code></td></tr>
+            <tr><td>长任务转很久后断开</td><td>高思考档首字前要想很久，某一层超时</td><td>调大 <code>API_TIMEOUT_MS</code>；放宽代理读超时；或调低思考档</td></tr>
+            <tr><td>账单比预期高很多</td><td>缓存断了</td><td>见上面的省钱要点，用 <a href="calculator/">计算器</a> 解析本地会话看命中率</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">完整报错表、cc-switch / WorkBuddy / CodeBuddy / OpenCode 接入和验货清单见 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 上的完整指南</a>。</p>
+    </section>
+
+    <section id="tools">
+      <h2>两个小工具</h2>
+      <div class="tools">
+        <a class="tool" href="calculator/">
+          <h3>Claude Code 账单计算器</h3>
+          <p>按请求数、上下文和缓存命中率估算每月花费；或选择本机 <code>~/.claude/projects/</code> 下的会话文件，在浏览器本地解析真实用量，不上传。</p>
+        </a>
+        <a class="tool" href="config/">
+          <h3>Claude Code 配置生成器</h3>
+          <p>选系统、填 Base URL 和模型，生成 shell / PowerShell / settings.json 配置。Key 只在本地拼进文本，不发送、不保存。</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="card" id="sources">
+      <h2>推荐的 API 来源</h2>
+      <p class="note">利益相关：本站由 TeamoRouter 团队维护，下面的 TeamoRouter 是我们自己的产品。排序按合规程度和官方程度，不按利益。</p>
+      <ol>
+        <li><strong>能用官方就用官方。</strong>有支持地区的账号和付款方式，Claude 订阅或官方 API 最省心。</li>
+        <li><strong>企业已有海外云账号</strong>：AWS Bedrock 或 Google Vertex AI，合规和发票最好处理。</li>
+        <li><strong><a href="https://teamorouter.com/?utm_source=github&amp;utm_medium=guide&amp;utm_campaign=cc_guide_cn">TeamoRouter</a></strong>（利益相关）：Anthropic 原生协议地址 <code>https://api.teamorouter.com</code>，按量计费，不是 Anthropic 官方渠道。</li>
+        <li><strong>其他第三方平台</strong>：按完整指南里的验货清单自己测，先小额充值。</li>
+      </ol>
+      <p class="small muted">第三方平台都不是 Anthropic 官方渠道，你发给 Claude Code 的代码和对话会经过平台方的服务器。敏感代码先看清平台的数据政策。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 价格和数据截至 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

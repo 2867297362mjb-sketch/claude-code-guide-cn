@@ -1,0 +1,42 @@
+name: Update pricing
+
+on:
+  schedule:
+    - cron: "17 1 * * *" # 每天 UTC 01:17（北京时间 09:17）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write # 仅用于提交后请求一次 Pages 重新构建
+
+concurrency:
+  group: update-pricing
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and filter pricing
+        id: fetch
+        run: bash .github/scripts/update-pricing.sh docs/data/pricing.json
+
+      - name: Commit if changed
+        if: steps.fetch.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/pricing.json
+          git commit -m "chore(pricing): 同步 Claude 模型价格 $(date -u +%F)"
+          git push
+
+      # GITHUB_TOKEN 推送的提交不一定会触发 Pages 构建，这里主动请求一次；失败不影响价格提交
+      - name: Request Pages build
+        if: steps.fetch.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"

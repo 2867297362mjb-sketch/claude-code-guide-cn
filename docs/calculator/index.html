@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 账单计算器：估算月花费、解析本地会话用量 | Claude Code 国内使用指南（2026）</title>
+  <meta name="description" content="估算 Claude Code 每天、每月花多少钱，看缓存断了会多花多少；或在浏览器本地解析 ~/.claude/projects 下的 .jsonl 会话文件，统计各模型用量、缓存命中率和官方价花费，文件不上传。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/calculator/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 账单计算器">
+  <meta property="og:description" content="估算月花费、看缓存命中率，本地解析会话文件，不上传。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/calculator/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/site.js" defer></script>
+  <script src="cc-usage.js" defer></script>
+  <script src="calculator.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../">指南</a>
+        <a href="./" aria-current="page">账单计算器</a>
+        <a href="../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Claude Code 账单计算器</h1>
+      <p class="lead">两种用法：按使用习惯<a href="#estimate">估算</a>每月花费；或选择本机的会话记录，在浏览器里<a href="#parse">本地解析</a>真实用量。</p>
+      <p class="small muted" id="price-meta">正在加载价格数据……</p>
+    </section>
+
+    <section class="card" id="estimate">
+      <h2>① 估算每月花费</h2>
+      <div class="form-grid">
+        <div class="field">
+          <label for="e-req">每天请求数</label>
+          <input type="number" id="e-req" min="0" step="1" value="100" inputmode="numeric">
+          <span class="hint">Claude Code 每一轮模型调用算一次请求，一次提问通常会触发多轮。</span>
+        </div>
+        <div class="field">
+          <label for="e-model">模型</label>
+          <select id="e-model">
+            <option value="claude-opus-5-5">Opus 5.5（claude-opus-5-5）</option>
+            <option value="claude-sonnet-5-5">Sonnet 5.5（claude-sonnet-5-5）</option>
+            <option value="claude-fable-5-1">Fable 5.1（claude-fable-5-1）</option>
+            <option value="claude-haiku-5-5">Haiku 5.5（claude-haiku-5-5）</option>
+          </select>
+          <span class="hint" id="e-model-price">&nbsp;</span>
+        </div>
+        <div class="field">
+          <label for="e-ctx">平均上下文（token / 次）</label>
+          <input type="number" id="e-ctx" min="0" step="1000" value="240000" inputmode="numeric">
+          <span class="hint">每次请求重发的全部输入：系统提示、CLAUDE.md、工具定义、历史对话。</span>
+        </div>
+        <div class="field">
+          <label for="e-hit">缓存读比例（%）</label>
+          <input type="number" id="e-hit" min="0" max="100" step="0.1" value="92" inputmode="decimal">
+          <span class="hint">上下文里按缓存读计价的部分。</span>
+        </div>
+        <div class="field">
+          <label for="e-out">平均输出（token / 次，含思考）</label>
+          <input type="number" id="e-out" min="0" step="100" value="2100" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="e-miss">没命中缓存的输入按</label>
+          <select id="e-miss">
+            <option value="write5m">缓存写入（5 分钟）计价</option>
+            <option value="write1h">缓存写入（1 小时）计价</option>
+            <option value="input">普通输入计价（不打缓存时）</option>
+          </select>
+          <span class="hint">Claude Code 走原生协议时，没命中的部分通常会写入缓存，供下一轮读取。</span>
+        </div>
+      </div>
+
+      <div id="e-result" aria-live="polite">
+        <div class="stats">
+          <div class="stat">
+            <div class="label">官方价 · 每月</div>
+            <div class="value" id="r-list-month">—</div>
+            <div class="sub" id="r-list-sub">—</div>
+          </div>
+          <div class="stat warn">
+            <div class="label">缓存断了（0%）· 每月</div>
+            <div class="value" id="r-broken-month">—</div>
+            <div class="sub" id="r-broken-sub">—</div>
+          </div>
+          <div class="stat accent">
+            <div class="label" id="r-ours-label">第三方平台价 · 每月</div>
+            <div class="value" id="r-ours-month">—</div>
+            <div class="sub" id="r-ours-sub">—</div>
+          </div>
+        </div>
+        <p class="small muted" id="r-breakdown"></p>
+        <p class="small muted" id="r-tier" hidden></p>
+      </div>
+      <p class="note">参考：TeamoRouter 平台 2026 年 10 月 7 日至 13 日的统计，Claude Code 调用 Opus 5.5 每次请求按官方价约 $0.18，缓存读占输入 92%。上面的默认值就是按这组数据设的。每月按 30 天计。</p>
+
+      <div class="cta" id="e-cta" hidden>
+        <span class="cta-text">用 TeamoRouter 约省 <strong id="e-save">$0</strong>/月</span>
+        <a class="btn primary" href="https://teamorouter.com/?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_cost_calculator" rel="noopener">去 TeamoRouter 看看</a>
+      </div>
+      <p class="disclosure">利益相关：本工具由 TeamoRouter 团队维护。「第三方平台价」按 TeamoRouter 当前价格计算。</p>
+    </section>
+
+    <section class="card" id="parse">
+      <h2>② 解析本地会话文件</h2>
+      <div class="callout">
+        <p><strong>文件只在你的浏览器里读取和计算，不会上传。</strong>页面的内容安全策略（CSP）只允许向本站发请求，加载完后断网也能用。</p>
+      </div>
+      <p>Claude Code 把每个会话记成一个 <code>.jsonl</code> 文件，放在：</p>
+      <ul>
+        <li>macOS / Linux：<code>~/.claude/projects/</code></li>
+        <li>Windows：<code>C:\Users\&lt;用户名&gt;\.claude\projects\</code></li>
+      </ul>
+      <p class="small muted"><code>.claude</code> 是隐藏目录。macOS 选择文件时按 <kbd>⌘</kbd><kbd>⇧</kbd><kbd>.</kbd> 显示隐藏文件，或按 <kbd>⌘</kbd><kbd>⇧</kbd><kbd>G</kbd> 粘贴路径；Windows 直接把路径粘贴到对话框地址栏。选「整个文件夹」会连子代理的记录一起统计。</p>
+
+      <div class="file-actions">
+        <label class="btn primary file-btn">选择 .jsonl 文件
+          <input type="file" id="p-files" accept=".jsonl,application/jsonl,application/x-ndjson,text/plain" multiple>
+        </label>
+        <label class="btn file-btn">选择整个文件夹
+          <input type="file" id="p-dir" webkitdirectory multiple>
+        </label>
+        <button type="button" class="btn" id="p-sample">用示例文件试试</button>
+      </div>
+      <div class="dropzone" id="p-drop">也可以把 .jsonl 文件拖到这里</div>
+      <p class="status" id="p-status" role="status"></p>
+
+      <div id="p-result" hidden>
+        <div class="stats" id="p-stats"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>模型</th>
+                <th class="num">请求数</th>
+                <th class="num">输入</th>
+                <th class="num">缓存写入</th>
+                <th class="num">缓存读</th>
+                <th class="num">输出</th>
+                <th class="num">缓存命中率</th>
+                <th class="num">官方价</th>
+                <th class="num">TeamoRouter 价</th>
+              </tr>
+            </thead>
+            <tbody id="p-tbody"></tbody>
+          </table>
+        </div>
+        <ul class="small muted" id="p-notes"></ul>
+        <div class="cta" id="p-cta" hidden>
+          <span class="cta-text">用 TeamoRouter 约省 <strong id="p-save">$0</strong>/月</span>
+          <a class="btn primary" href="https://teamorouter.com/?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_cost_calculator" rel="noopener">去 TeamoRouter 看看</a>
+        </div>
+        <p class="disclosure">利益相关：本工具由 TeamoRouter 团队维护。</p>
+      </div>
+      <p class="small muted">缓存命中率 = 缓存读 ÷（输入 + 缓存写入 + 缓存读）。解析规则参考开源项目 <a href="https://github.com/ryoppippi/ccusage">ccusage</a>：同一条响应被拆成多行或复制进多个会话文件时只算一次。</p>
+    </section>
+
+    <section class="card">
+      <h2>价格说明</h2>
+      <p>价格数据每日从 TeamoRouter 价格接口同步到本站的 <a href="../data/pricing.json">pricing.json</a>，其中「官方价」为 Anthropic 官方标价，以官网价格页为准。单位：美元 / 每百万 token。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>模型 ID</th>
+              <th class="num">输入</th>
+              <th class="num">输出</th>
+              <th class="num">缓存写（5 分钟）</th>
+              <th class="num">缓存读</th>
+              <th class="num">TeamoRouter 约</th>
+            </tr>
+          </thead>
+          <tbody id="price-tbody"><tr><td colspan="6" class="muted">加载中……</td></tr></tbody>
+        </table>
+      </div>
+      <p class="small muted" id="price-tier-note"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本工具由 TeamoRouter 团队维护。价格数据每日同步，以官网价格页为准；计算结果仅供参考，以平台账单为准。</p>
+      <p>MIT License · <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,5 +1,7 @@
 # Claude Code 国内使用指南（2026 版）
 
+> **在线工具**：[指南网页版](https://2867297362mjb-sketch.github.io/claude-code-guide-cn/) · [Claude Code 账单计算器](https://2867297362mjb-sketch.github.io/claude-code-guide-cn/calculator/)（估算月花费，或本地解析会话文件看缓存命中率） · [配置生成器](https://2867297362mjb-sketch.github.io/claude-code-guide-cn/config/)（一键生成环境变量 / settings.json）
+
 Claude Code 国内如何使用、第三方 API 怎么配、模型 ID 怎么填、账单为什么比预期高、报错怎么查，这一页按顺序讲清楚。内容对应 Claude Code 2.1.284，数据截至 2026 年 10 月。
 
 ## 一句话答案

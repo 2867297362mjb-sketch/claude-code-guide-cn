@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Claude Code 配置生成器：ANTHROPIC_BASE_URL、Key 与模型 ID | Claude Code 国内使用指南（2026）</title>
+  <meta name="description" content="选系统（macOS / Linux、Windows PowerShell、settings.json），填 Base URL 和模型 ID，一键生成 Claude Code 第三方 API 配置。Key 只在浏览器本地拼进文本，不发送、不进 URL、不保存。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/config/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 配置生成器">
+  <meta property="og:description" content="一键生成 Claude Code 环境变量或 settings.json 配置，Key 不离开浏览器。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/config/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/site.js" defer></script>
+  <script src="config.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../">指南</a>
+        <a href="../calculator/">账单计算器</a>
+        <a href="./" aria-current="page">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Claude Code 配置生成器</h1>
+      <p class="lead">选系统、填地址和模型，生成可以直接粘贴的配置。适用于任何支持 Anthropic 原生协议的平台。</p>
+    </section>
+
+    <section class="card">
+      <div class="callout">
+        <p><strong>Key 只在你的浏览器里拼进下面的文本：</strong>不发送到任何地方、不进网址、不存进浏览器存储，刷新页面就清空。本页的内容安全策略（CSP）禁止发起任何网络请求。</p>
+      </div>
+
+      <div class="form-grid">
+        <fieldset class="seg full" id="g-os">
+          <legend>写法</legend>
+          <label><input type="radio" name="os" value="settings" checked> settings.json（推荐，三平台通用）</label>
+          <label><input type="radio" name="os" value="unix"> macOS / Linux 环境变量</label>
+          <label><input type="radio" name="os" value="windows"> Windows PowerShell</label>
+        </fieldset>
+
+        <fieldset class="seg full" id="g-shell" hidden>
+          <legend>你的 shell（终端里 <code>echo $SHELL</code> 查看）</legend>
+          <label><input type="radio" name="shell" value="zsh" checked> zsh（macOS 默认）</label>
+          <label><input type="radio" name="shell" value="bash"> bash</label>
+        </fieldset>
+
+        <div class="field full">
+          <label for="c-base">Base URL（ANTHROPIC_BASE_URL）</label>
+          <input type="url" id="c-base" class="mono" value="https://api.teamorouter.com" spellcheck="false" autocapitalize="off" autocomplete="off">
+          <span class="hint">任何 Anthropic 兼容地址都可以。只写到域名，<strong>不要带 /v1</strong>，Claude Code 会自己拼 /v1/messages。</span>
+        </div>
+
+        <div class="field full">
+          <label for="c-key">Key（ANTHROPIC_AUTH_TOKEN）</label>
+          <div class="input-row">
+            <input type="password" id="c-key" class="mono" placeholder="留空则生成占位符「你的Key」" spellcheck="false" autocapitalize="off" autocomplete="off" data-lpignore="true" data-1p-ignore>
+            <button type="button" class="btn" id="c-key-toggle" aria-pressed="false">显示</button>
+          </div>
+          <span class="hint">只用 ANTHROPIC_AUTH_TOKEN（发 Authorization: Bearer），生成的配置会去掉 ANTHROPIC_API_KEY，两个只留一个。</span>
+        </div>
+
+        <div class="field">
+          <label for="c-model">主模型（ANTHROPIC_MODEL）</label>
+          <input type="text" id="c-model" class="mono" list="model-ids" value="claude-opus-5-5" spellcheck="false" autocapitalize="off" autocomplete="off">
+          <span class="hint">启动时默认用的模型。</span>
+        </div>
+        <div class="field">
+          <label for="c-opus">Opus 别名（ANTHROPIC_DEFAULT_OPUS_MODEL）</label>
+          <input type="text" id="c-opus" class="mono" list="model-ids" value="claude-opus-5-5" spellcheck="false" autocapitalize="off" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="c-sonnet">Sonnet 别名（ANTHROPIC_DEFAULT_SONNET_MODEL）</label>
+          <input type="text" id="c-sonnet" class="mono" list="model-ids" value="claude-sonnet-5-5" spellcheck="false" autocapitalize="off" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="c-haiku">Haiku 别名（ANTHROPIC_DEFAULT_HAIKU_MODEL）</label>
+          <input type="text" id="c-haiku" class="mono" list="model-ids" value="claude-haiku-4-5" spellcheck="false" autocapitalize="off" autocomplete="off">
+          <span class="hint">会话标题、摘要等后台小任务用它，最容易被忽略。</span>
+        </div>
+        <div class="field">
+          <label for="c-sub">子代理模型（CLAUDE_CODE_SUBAGENT_MODEL）</label>
+          <input type="text" id="c-sub" class="mono" list="model-ids" value="claude-sonnet-5-5" spellcheck="false" autocapitalize="off" autocomplete="off">
+          <span class="hint">搜代码、跑测试这类子任务交给它，Sonnet 5.5 单价是 Opus 5.5 的一半。</span>
+        </div>
+        <div class="field">
+          <span class="label">其他</span>
+          <label class="check"><input type="checkbox" id="c-quiet"> <span>关闭非必要流量（<code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code>）：关掉遥测、错误上报，同时会关掉自动更新，记得隔段时间手动 <code>claude update</code>。</span></label>
+        </div>
+        <datalist id="model-ids">
+          <option value="claude-opus-5-5">Opus 5.5</option>
+          <option value="claude-sonnet-5-5">Sonnet 5.5</option>
+          <option value="claude-fable-5-1">Fable 5.1</option>
+          <option value="claude-haiku-5-5">Haiku 5.5</option>
+          <option value="claude-haiku-4-5">Haiku 4.5</option>
+        </datalist>
+      </div>
+      <p class="small muted">模型输入框留空表示不设置这一项。不同平台的模型 ID 可能不同，以平台模型列表为准。</p>
+    </section>
+
+    <section class="card" aria-live="polite">
+      <h2 id="out-title">生成的配置</h2>
+      <ul class="warnings" id="c-warnings"></ul>
+      <p id="out-where" class="small"></p>
+      <div class="code" id="out-code" data-custom-copy><pre><code id="out-text"></code></pre></div>
+      <label class="check small" id="c-reveal-wrap" hidden><input type="checkbox" id="c-reveal"> <span>在预览里显示完整 Key（复制按钮始终复制完整内容）</span></label>
+      <h3>然后</h3>
+      <ol id="out-next"></ol>
+
+      <div class="cta">
+        <span class="cta-text">获取一个能直接填进上面配置的 Key：TeamoRouter 支持 Anthropic 原生协议，按量计费</span>
+        <a class="btn primary" href="https://teamorouter.com/?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_config_generator" rel="noopener">获取 TeamoRouter Key</a>
+      </div>
+      <p class="disclosure">利益相关：本工具由 TeamoRouter 团队维护。生成的配置对任何 Anthropic 兼容平台通用。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本工具由 TeamoRouter 团队维护。配置写法见 <a href="../">指南</a> 和 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a>。</p>
+      <p>MIT License</p>
+    </div>
+  </footer>
+</body>
+</html>
