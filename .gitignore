@@ -1,0 +1,14 @@
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# 别把任何真实配置或 Key 提交进来
+.env
+.env.*
+settings.json
+settings.local.json
+*.bak.*
+.claude/
