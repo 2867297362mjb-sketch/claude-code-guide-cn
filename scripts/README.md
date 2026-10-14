@@ -55,3 +55,5 @@
 ```bash
 cp ~/.claude/settings.json.bak.20261014-153000 ~/.claude/settings.json
 ```
+
+> 说明：`setup.sh` 已在 macOS（bash 3.2）下用临时 HOME 自测通过；`setup.ps1` 目前只做过人工审查，**还没有在 Windows 上实际运行过**，用之前请先备份 `%USERPROFILE%\.claude\settings.json`，遇到问题欢迎提 issue。
