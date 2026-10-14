@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 There's an issue with the selected model 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="当前选的模型 ID 请求失败了。先检查 ID 拼写和平台模型列表；如果都没问题，用 curl 直接请求一次，看真实的报错是什么。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/model-not-found/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 There&#x27;s an issue with the selected model 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="当前选的模型 ID 请求失败了。先检查 ID 拼写和平台模型列表；如果都没问题，用 curl 直接请求一次，看真实的报错是什么。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/model-not-found/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 There's an issue with the selected model 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "当前选的模型 ID 请求失败了。先检查 ID 拼写和平台模型列表；如果都没问题，用 curl 直接请求一次，看真实的报错是什么。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 There's an issue with the selected model 怎么解决</h1>
+      <p class="lead">当前选的模型 ID 请求失败了。先检查 ID 拼写和平台模型列表；如果都没问题，用 curl 直接请求一次，看真实的报错是什么。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>There's an issue with the selected model (claude-opus-5-5). It may not exist or you may not have access to it.</code></pre></div>
+      <p class="small muted">括号里是你当前选的模型 ID。</p>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>Claude Code 请求某个模型失败时会显示这条提示。它不一定真的表示模型不存在：上游的其他错误有时也会被显示成这句话，所以要看原始返回才能确定原因。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>模型 ID 写错了，比如写成了点号 <code>claude-opus-5.5</code>，正确的是短横线 <code>claude-opus-5-5</code>。</li>
+        <li>所用平台没有上架这个模型，或者你的 Key 没有这个模型的权限。</li>
+        <li>Claude Code 版本太旧，不认识新模型。</li>
+        <li>上游的其他错误被显示成了这句话。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>核对 <code>ANTHROPIC_MODEL</code> 和 <code>ANTHROPIC_DEFAULT_OPUS_MODEL</code>、<code>ANTHROPIC_DEFAULT_SONNET_MODEL</code>、<code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code> 里的 ID，和平台模型列表逐字对照。</p></li>
+        <li><p>升级 Claude Code：</p><div class="code"><pre><code>claude update</code></pre></div></li>
+        <li><p>直接请求一次，看平台返回的原始错误（把 model 换成你在用的 ID）：</p><div class="code"><pre><code>curl -sS "$ANTHROPIC_BASE_URL/v1/messages" \
+  -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-opus-5-5","max_tokens":16,"messages":[{"role":"user","content":"hi"}]}'</code></pre></div></li>
+      </ol>
+      <p class="small muted">curl 命令里用的是 Claude Code 的同名环境变量，在设好变量的终端里直接运行即可，Key 不会显示出来。Windows 用户可以在 Git Bash 或 WSL 里运行。</p>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../404-not-found/">API Error: 404</a></li>
+        <li><a href="../403-request-not-allowed/">API Error: 403 Request not allowed</a></li>
+        <li><a href="../400-thinking-signature/">API Error: 400 Invalid signature in thinking block</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=model-not-found">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

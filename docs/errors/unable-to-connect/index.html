@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 Unable to connect to Anthropic services 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="Claude Code 连不上 api.anthropic.com。国内最常见的原因是直连官方不通，或者设置的第三方地址没有被 Claude Code 读到，它还在连官方。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/unable-to-connect/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 Unable to connect to Anthropic services 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="Claude Code 连不上 api.anthropic.com。国内最常见的原因是直连官方不通，或者设置的第三方地址没有被 Claude Code 读到，它还在连官方。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/unable-to-connect/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 Unable to connect to Anthropic services 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Code 连不上 api.anthropic.com。国内最常见的原因是直连官方不通，或者设置的第三方地址没有被 Claude Code 读到，它还在连官方。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 Unable to connect to Anthropic services 怎么解决</h1>
+      <p class="lead">Claude Code 连不上 api.anthropic.com。国内最常见的原因是直连官方不通，或者设置的第三方地址没有被 Claude Code 读到，它还在连官方。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>Unable to connect to Anthropic services
+Failed to connect to api.anthropic.com: ERR_BAD_REQUEST</code></pre></div>
+      <p class="small muted">冒号后面也可能是 ECONNRESET、ETIMEDOUT 等网络错误。</p>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>Claude Code 启动时要连接模型服务。没有设置 <code>ANTHROPIC_BASE_URL</code> 时，它连的是官方的 <code>api.anthropic.com</code>；这一步失败就会出现这条报错。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>所在网络连不上 <code>api.anthropic.com</code>，或者出口地区不在 Anthropic 支持的范围内。</li>
+        <li>已经配置了第三方平台，但环境变量没生效：在旧终端里启动、VS Code 没整个重启，或者写错了变量名，Claude Code 仍在连官方。</li>
+        <li>开了代理，但 Claude Code 没走代理：Node.js 只认 <code>HTTPS_PROXY</code> 这类环境变量，不认系统代理设置。</li>
+        <li>冒号后是 ECONNRESET 时，多是公司防火墙、代理或安全软件中途断开了连接。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>先确认 Claude Code 读到了哪些变量：</p><div class="code"><pre><code># macOS / Linux：只列变量名，不打印 Key
+env | grep ^ANTHROPIC_ | cut -d= -f1
+
+# Windows PowerShell
+(Get-ChildItem Env:ANTHROPIC*).Name</code></pre></div></li>
+        <li><p>用第三方平台时，列表里必须有 <code>ANTHROPIC_BASE_URL</code> 和 <code>ANTHROPIC_AUTH_TOKEN</code>。没有就新开一个终端再试；VS Code 用户要完全退出 VS Code 再打开。也可以把这两个变量写进 <code>~/.claude/settings.json</code> 的 <code>env</code>，不依赖终端。</p></li>
+        <li><p>用官方账号时，需要能连上 <code>api.anthropic.com</code> 的网络，并让 Claude Code 走代理：</p><div class="code"><pre><code>export HTTPS_PROXY=http://127.0.0.1:7890   # 换成你的代理地址和端口</code></pre></div></li>
+        <li><p>还不行，在 Claude Code 里输入 <code>/status</code>，看它实际连接的地址和使用的凭据。</p></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../403-request-not-allowed/">API Error: 403 Request not allowed</a></li>
+        <li><a href="../401-invalid-api-key/">Invalid API key · Please run /login</a></li>
+        <li><a href="../404-not-found/">API Error: 404</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=unable-to-connect">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

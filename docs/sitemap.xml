@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/</loc></url>
   <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/calculator/</loc></url>
   <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/config/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/unable-to-connect/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/403-request-not-allowed/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/401-invalid-api-key/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/529-overloaded/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/credit-balance-too-low/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/400-thinking-signature/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/model-not-found/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/429-rate-limit/</loc></url>
+  <url><loc>https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/404-not-found/</loc></url>
 </urlset>

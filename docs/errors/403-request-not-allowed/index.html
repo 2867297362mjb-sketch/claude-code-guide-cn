@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 API Error: 403 Request not allowed 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="请求被服务端直接拒绝了。用官方账号时，多半是网络出口地区或账号状态的问题；用第三方平台时，多半是 Key 没有这个模型的权限。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/403-request-not-allowed/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 API Error: 403 Request not allowed 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="请求被服务端直接拒绝了。用官方账号时，多半是网络出口地区或账号状态的问题；用第三方平台时，多半是 Key 没有这个模型的权限。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/403-request-not-allowed/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 API Error: 403 Request not allowed 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "请求被服务端直接拒绝了。用官方账号时，多半是网络出口地区或账号状态的问题；用第三方平台时，多半是 Key 没有这个模型的权限。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 API Error: 403 Request not allowed 怎么解决</h1>
+      <p class="lead">请求被服务端直接拒绝了。用官方账号时，多半是网络出口地区或账号状态的问题；用第三方平台时，多半是 Key 没有这个模型的权限。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>Failed to authenticate. API Error: 403 Request not allowed</code></pre></div>
+      <p class="small muted">有时出现在压缩上下文时：Error during compaction: Failed to authenticate. API Error: 403 Request not allowed</p>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>403 表示服务端收到了请求、认出了你是谁，但不允许这次访问。它和 401（凭据不对）不同，换一个 Key 字符串通常解决不了。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>用官方订阅或官方 API 时，网络出口 IP 所在地区不在 Anthropic 支持的范围内。</li>
+        <li>官方账号被风控或封禁，或者登录态失效。</li>
+        <li>用第三方平台时，这个 Key 没有开通当前模型，或者所在分组不能用这个模型。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>先确认请求发去了哪里：在 Claude Code 里输入 <code>/status</code>。</p></li>
+        <li><p>如果发去的是官方：检查代理出口所在地区；在 Claude Code 里执行 <code>/logout</code> 再 <code>/login</code> 重新登录。账号被封只能找 Anthropic 申诉。</p></li>
+        <li><p>如果发去的是第三方平台：用下面的命令绕开 Claude Code 直接请求一次，看平台返回的原始错误，再对照平台的模型列表和 Key 权限：</p><div class="code"><pre><code>curl -sS "$ANTHROPIC_BASE_URL/v1/messages" \
+  -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-opus-5-5","max_tokens":16,"messages":[{"role":"user","content":"hi"}]}'</code></pre></div></li>
+      </ol>
+      <p class="small muted">curl 命令里用的是 Claude Code 的同名环境变量，在设好变量的终端里直接运行即可，Key 不会显示出来。Windows 用户可以在 Git Bash 或 WSL 里运行。</p>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../unable-to-connect/">Unable to connect to Anthropic services</a></li>
+        <li><a href="../401-invalid-api-key/">Invalid API key · Please run /login</a></li>
+        <li><a href="../model-not-found/">There's an issue with the selected model</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=403-request-not-allowed">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

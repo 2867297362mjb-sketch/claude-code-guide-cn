@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 Invalid API key · Please run /login 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="发出去的 Key 不对。最常见的原因是机器上同时留着 ANTHROPIC_API_KEY 和 ANTHROPIC_AUTH_TOKEN，Claude Code 用了你没想到的那一个。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/401-invalid-api-key/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 Invalid API key · Please run /login 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="发出去的 Key 不对。最常见的原因是机器上同时留着 ANTHROPIC_API_KEY 和 ANTHROPIC_AUTH_TOKEN，Claude Code 用了你没想到的那一个。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/401-invalid-api-key/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 Invalid API key · Please run /login 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "发出去的 Key 不对。最常见的原因是机器上同时留着 ANTHROPIC_API_KEY 和 ANTHROPIC_AUTH_TOKEN，Claude Code 用了你没想到的那一个。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 Invalid API key · Please run /login 怎么解决</h1>
+      <p class="lead">发出去的 Key 不对。最常见的原因是机器上同时留着 ANTHROPIC_API_KEY 和 ANTHROPIC_AUTH_TOKEN，Claude Code 用了你没想到的那一个。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>Invalid API key · Please run /login</code></pre></div>
+      <p class="small muted">也可能显示为 API Error: 401，或返回体里有 authentication_error、invalid_api_key。</p>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>401 表示服务端不认这个凭据。Claude Code 有两种发 Key 的方式：<code>ANTHROPIC_AUTH_TOKEN</code> 发 <code>Authorization: Bearer</code> 请求头，<code>ANTHROPIC_API_KEY</code> 发 <code>x-api-key</code> 请求头。两个都设时，很容易发错。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>机器上还留着旧的 <code>ANTHROPIC_API_KEY</code>（以前用官方 API 时设的），和新平台的 Key 冲突。</li>
+        <li>Key 复制不全，或者首尾多了空格、换行。</li>
+        <li>终端里的环境变量和 <code>settings.json</code> 里的值不一样，终端里的优先级更高。</li>
+        <li>官方 Key 发给了第三方地址，或者第三方 Key 发给了官方地址。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>列出所有 ANTHROPIC_ 开头的变量名，看有没有重复或残留：</p><div class="code"><pre><code># macOS / Linux：只列变量名，不打印 Key
+env | grep ^ANTHROPIC_ | cut -d= -f1
+
+# Windows PowerShell
+(Get-ChildItem Env:ANTHROPIC*).Name</code></pre></div></li>
+        <li><p>删掉不用的那个，用第三方平台时推荐只保留 <code>ANTHROPIC_AUTH_TOKEN</code>：</p><div class="code"><pre><code>unset ANTHROPIC_API_KEY
+# 再到 ~/.zshrc、~/.bashrc 等文件里删掉对应的 export 行</code></pre></div></li>
+        <li><p>重新从平台控制台复制 Key，新开终端后再启动 Claude Code。</p></li>
+        <li><p>还不行，用下面的命令直接请求一次。返回 401 说明 Key 本身有问题；能正常返回说明问题在 Claude Code 的配置：</p><div class="code"><pre><code>curl -sS "$ANTHROPIC_BASE_URL/v1/messages" \
+  -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-opus-5-5","max_tokens":16,"messages":[{"role":"user","content":"hi"}]}'</code></pre></div></li>
+      </ol>
+      <p class="small muted">curl 命令里用的是 Claude Code 的同名环境变量，在设好变量的终端里直接运行即可，Key 不会显示出来。Windows 用户可以在 Git Bash 或 WSL 里运行。</p>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../unable-to-connect/">Unable to connect to Anthropic services</a></li>
+        <li><a href="../403-request-not-allowed/">API Error: 403 Request not allowed</a></li>
+        <li><a href="../credit-balance-too-low/">Credit balance is too low</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=401-invalid-api-key">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

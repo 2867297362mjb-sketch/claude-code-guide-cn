@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 API Error: 400 Invalid signature in thinking block 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="会话历史里的思考块对不上当前的服务端。最常见的原因是在同一个会话里换了平台或模型。新开一个会话就能恢复。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/400-thinking-signature/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 API Error: 400 Invalid signature in thinking block 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="会话历史里的思考块对不上当前的服务端。最常见的原因是在同一个会话里换了平台或模型。新开一个会话就能恢复。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/400-thinking-signature/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 API Error: 400 Invalid signature in thinking block 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "会话历史里的思考块对不上当前的服务端。最常见的原因是在同一个会话里换了平台或模型。新开一个会话就能恢复。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 API Error: 400 Invalid signature in thinking block 怎么解决</h1>
+      <p class="lead">会话历史里的思考块对不上当前的服务端。最常见的原因是在同一个会话里换了平台或模型。新开一个会话就能恢复。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>API Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"messages.1.content.0: Invalid `signature` in `thinking` block"}}</code></pre></div>
+      <p class="small muted">同类报错：If an assistant message contains any thinking blocks, the first block must be 'thinking' or 'redacted_thinking'. Found 'text'.</p>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>开启思考的模型会给每段思考内容附一个签名，后续请求要把这些思考块原样带回去，只有生成它的服务端认得这个签名。历史里的思考块被换过后端、被改写或顺序被打乱，服务端就会拒绝整个请求。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>会话中途改了 <code>ANTHROPIC_BASE_URL</code>（比如从官方换到第三方，或者换了一家平台），然后继续或 <code>--resume</code> 原来的会话。</li>
+        <li>会话中途切换了模型。</li>
+        <li>中间的代理或网关改写、删减了思考块。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>执行 <code>/clear</code>，或者退出后新开一个会话，不要恢复报错的旧会话。</p></li>
+        <li><p>以后同一个会话里不要切换平台。要换平台，先结束当前会话。</p></li>
+        <li><p>全新的会话里第一次调用工具就报这个错，说明是平台或网关的问题，带上报错里的 request_id 去找平台。</p></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../model-not-found/">There's an issue with the selected model</a></li>
+        <li><a href="../unable-to-connect/">Unable to connect to Anthropic services</a></li>
+        <li><a href="../529-overloaded/">API Error: 529 Overloaded</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=400-thinking-signature">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

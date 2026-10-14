@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude Code 报错 Credit balance is too low 怎么解决（原因与排查）| Claude Code 国内指南</title>
+  <meta name="description" content="Claude Code 在用官方 Console 的 API Key 计费，而这个账户的余额用完了。很多人其实想用订阅，却因为机器上设了 ANTHROPIC_API_KEY，被按 API 余额扣费。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/credit-balance-too-low/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude Code 报错 Credit balance is too low 怎么解决（原因与排查）| Claude Code 国内指南">
+  <meta property="og:description" content="Claude Code 在用官方 Console 的 API Key 计费，而这个账户的余额用完了。很多人其实想用订阅，却因为机器上设了 ANTHROPIC_API_KEY，被按 API 余额扣费。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/credit-balance-too-low/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script src="../../assets/site.js" defer></script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Code 报错 Credit balance is too low 怎么解决",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Code 在用官方 Console 的 API Key 计费，而这个账户的余额用完了。很多人其实想用订阅，却因为机器上设了 ANTHROPIC_API_KEY，被按 API 余额扣费。"
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../../">指南</a>
+        <a href="../../errors/">报错速查</a>
+        <a href="../../calculator/">账单计算器</a>
+        <a href="../../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav class="small muted" aria-label="位置"><a href="../../">指南</a> / <a href="../">报错速查</a></nav>
+    <section class="hero">
+      <h1>Claude Code 报错 Credit balance is too low 怎么解决</h1>
+      <p class="lead">Claude Code 在用官方 Console 的 API Key 计费，而这个账户的余额用完了。很多人其实想用订阅，却因为机器上设了 ANTHROPIC_API_KEY，被按 API 余额扣费。</p>
+    </section>
+
+    <section class="card">
+      <h2>报错原文</h2>
+      <div class="code wrap"><pre><code>Credit balance is too low to access the Anthropic API. Please go to Plans &amp; Billing to upgrade or purchase credits.</code></pre></div>
+    </section>
+
+    <section class="card">
+      <h2>这条报错是什么意思</h2>
+      <p>这条报错来自 Anthropic 官方 API，说明请求用的是 Console 里创建的 API Key，按 API 余额计费，和 Pro / Max 订阅额度无关。</p>
+    </section>
+
+    <section class="card">
+      <h2>常见原因</h2>
+      <ol>
+        <li>机器上设了 <code>ANTHROPIC_API_KEY</code>，Claude Code 优先用它，没走你的订阅。</li>
+        <li>Console 账户的 API 余额确实用完了。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>怎么排查</h2>
+      <ol>
+        <li><p>想用 Pro / Max 订阅：删掉 <code>ANTHROPIC_API_KEY</code>，在 Claude Code 里 <code>/login</code> 用订阅账号登录。</p><div class="code"><pre><code>unset ANTHROPIC_API_KEY</code></pre></div></li>
+        <li><p>就是想用官方 API：到 Console 的 Plans &amp; Billing 页面充值。</p></li>
+        <li><p>用第三方平台时不会出现这句原文。平台余额不足时一般返回 402 或平台自己的提示，充值后重试即可。</p></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>相关报错</h2>
+      <ul>
+        <li><a href="../401-invalid-api-key/">Invalid API key · Please run /login</a></li>
+        <li><a href="../429-rate-limit/">API Error: 429 rate_limit_error</a></li>
+        <li><a href="../unable-to-connect/">Unable to connect to Anthropic services</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>配置有问题？</h2>
+      <p>用 <a href="../../config/">配置生成器</a> 重新生成一份环境变量或 <code>settings.json</code>，Key 只在本地拼接。</p>
+      <p class="note">需要国内能直接连接的 Anthropic 原生协议地址，可以看 <a href="https://teamorouter.com/zh/docs/install-claude-code?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cc_error_pages&amp;utm_content=credit-balance-too-low">TeamoRouter 的 Claude Code 接入文档</a>（利益相关：本站由 TeamoRouter 团队维护，它不是 Anthropic 官方渠道）。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。内容以 <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub 仓库</a> 为准，欢迎提 Issue / PR 勘误。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

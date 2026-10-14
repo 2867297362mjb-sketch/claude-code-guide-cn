@@ -256,6 +256,8 @@ Claude 的提示缓存是 Anthropic 原生协议（`/v1/messages`）的能力。
 
 ## 6. 常见报错
 
+每条报错的原文、原因和排查步骤，见站点上的 [报错速查](https://2867297362mjb-sketch.github.io/claude-code-guide-cn/errors/)（Unable to connect、403、401、529、thinking 签名 400、模型不存在、429、404 等）。
+
 | 现象 | 常见原因 | 怎么办 |
 |---|---|---|
 | 启动后仍要求登录 Anthropic 账号 | 环境变量没被读到 | 新开终端；VS Code 内置终端要重启整个 VS Code；或者改用 settings.json |

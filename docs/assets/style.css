@@ -788,3 +788,39 @@ label.file-btn input[type="file"] {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ---------- 报错速查 ---------- */
+
+.code.wrap pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.error-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.error-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.error-list li:first-child {
+  padding-top: 0;
+}
+
+.error-list a {
+  font-weight: 600;
+}
+
+.error-list code {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.error-list p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
