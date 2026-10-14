@@ -21,6 +21,12 @@ jq -S '
     | select((.id | type) == "string" and (.id | startswith("claude-")))
     | { id, display_name, list_cost, cost, context_tier_pricing } ]
   | sort_by(.id)
+  # 官方价校正：Anthropic 官方价格页（platform.claude.com/docs/en/about-claude/pricing，2026-10-14）
+  # Sonnet 5.5 缓存读为 $0.10/MTok（输入价的 5%），接口里的 list_cost 仍是 $0.20，这里按官方页覆盖；
+  # cost（TeamoRouter 实际价）不动。
+  | map(if .id == "claude-sonnet-5-5"
+        then .list_cost.cache_read = 0.1 | .list_cost.cached_input = 0.1
+        else . end)
 ' "$tmp/raw.json" > "$tmp/models.json"
 
 # 基本校验：至少有一个模型，且每个模型的官方价输入 / 输出都是数字，防止接口异常时把空数据写进去
