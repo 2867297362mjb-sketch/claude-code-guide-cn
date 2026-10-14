@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Claude 客户端 Cowork 国内怎么用：接第三方 API 的配置步骤与常见报错 | Claude Code 国内指南</title>
+  <meta name="description" content="Claude 客户端（Claude Desktop）的 Cowork 和 Code 可以直接接 Anthropic 兼容的第三方 API：打开开发者模式，在 Configure Third-Party Inference 里选 Gateway 填地址和 Key。附常见报错排查。">
+  <link rel="canonical" href="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/cowork/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="Claude 客户端 Cowork 接第三方 API：配置方法">
+  <meta property="og:description" content="开发者模式 → Configure Third-Party Inference → Gateway。">
+  <meta property="og:url" content="https://2867297362mjb-sketch.github.io/claude-code-guide-cn/cowork/">
+  <meta name="theme-color" content="#0e6b62">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/site.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Claude 客户端的 Cowork 能接第三方 API 吗？",
+        "acceptedAnswer": {"@type": "Answer", "text": "可以。Claude 客户端自带第三方推理设置：Help → Troubleshooting → Enable Developer Mode 打开开发者模式，再到 Developer → Configure Third-Party Inference，连接类型选 Gateway，填 Anthropic 兼容平台的地址和 Key。Cowork 和 Code 都会走这个地址。"}
+      },
+      {
+        "@type": "Question",
+        "name": "Configure Third-Party Inference 菜单找不到怎么办？",
+        "acceptedAnswer": {"@type": "Answer", "text": "先在 Help → Troubleshooting 里打开 Enable Developer Mode，菜单栏才会出现 Developer。打开后仍然没有，说明客户端版本太旧，到 claude.ai/download 更新。"}
+      },
+      {
+        "@type": "Question",
+        "name": "Gateway 地址要不要带 /v1？",
+        "acceptedAnswer": {"@type": "Answer", "text": "不带。只写到域名，客户端会自己请求 /v1/messages 和 /v1/models。"}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../">Claude Code <span>国内指南</span></a>
+      <nav class="nav" aria-label="主导航">
+        <a href="../">指南</a>
+        <a href="./" aria-current="page">Cowork</a>
+        <a href="../errors/">报错速查</a>
+        <a href="../calculator/">账单计算器</a>
+        <a href="../config/">配置生成器</a>
+        <a href="https://github.com/2867297362mjb-sketch/claude-code-guide-cn">GitHub</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Claude 客户端 Cowork 接第三方 API</h1>
+      <p class="lead">Claude 客户端（Claude Desktop）自带第三方推理设置，Cowork 和 Code 都能直接用 Anthropic 兼容平台的地址和 Key，不需要 Claude 订阅。下面是在客户端里直接配置的步骤，字段名按客户端 2.31226.0 版本核对。</p>
+    </section>
+
+    <section class="card" id="manual">
+      <h2>配置步骤</h2>
+      <ol>
+        <li>打开开发者模式：菜单栏 <strong>Help → Troubleshooting → Enable Developer Mode</strong>。客户端可能会重启，之后菜单栏出现 <strong>Developer</strong>。Windows 在登录界面左上角的 ☰ 菜单里。</li>
+        <li>选择 <strong>Developer → Configure Third-Party Inference…</strong>，打开配置窗口。</li>
+        <li>按下表填写：
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>字段</th><th>填写</th></tr></thead>
+              <tbody>
+                <tr><td>Inference provider</td><td>Gateway</td></tr>
+                <tr><td>Gateway base URL</td><td>平台给的 Anthropic 兼容地址，<strong>只写到域名，不带 /v1</strong></td></tr>
+                <tr><td>Credential kind</td><td>Static API key</td></tr>
+                <tr><td>Gateway API key</td><td>平台的 Key</td></tr>
+                <tr><td>Gateway auth scheme</td><td>Bearer（默认）。平台只认 <code>x-api-key</code> 请求头时改成 x-api-key</td></tr>
+                <tr><td>Models</td><td>平台支持 <code>/v1/models</code> 时会自动列出；列表为空就手动添加模型 ID</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </li>
+        <li>保存配置。客户端没有自动重启的话，完全退出再打开。</li>
+      </ol>
+    </section>
+
+
+    <section class="card">
+      <div class="cta">
+        <span class="cta-text">需要一个国内能直接连的 Anthropic 兼容地址：TeamoRouter，按量计费</span>
+        <a class="btn primary" href="https://teamorouter.com/zh/docs/install-claude-desktop?utm_source=github&amp;utm_medium=tool&amp;utm_campaign=cowork_guide" rel="noopener">看 TeamoRouter 的 Claude 客户端接入文档</a>
+      </div>
+      <p class="disclosure">利益相关：本页由 TeamoRouter 团队维护，TeamoRouter 不是 Anthropic 官方渠道。上面的步骤对任何 Anthropic 兼容平台通用。</p>
+    </section>
+
+    <section class="card" id="faq">
+      <h2>常见问题</h2>
+      <h3>菜单里没有 Developer 或 Configure Third-Party Inference</h3>
+      <p>先在 Help → Troubleshooting 打开 Enable Developer Mode。打开后仍然没有，说明客户端版本太旧，到 claude.ai/download 下载最新版。</p>
+      <h3>Windows 提示 Virtual Machine Platform not available</h3>
+      <p>Cowork 的工作区需要 Windows 的「虚拟机平台」：<code>Win + R</code> 输入 <code>optionalfeatures</code>，勾选「虚拟机平台」（Virtual Machine Platform），确定后重启电脑。</p>
+      <h3>连接失败或 401</h3>
+      <p>多半是地址多写了 <code>/v1</code>、Key 复制不全，或者 auth scheme 和平台要求不一致（Bearer 和 x-api-key 填反）。可以先用 curl 直接请求一次排除客户端问题，方法见 <a href="../errors/401-invalid-api-key/">Invalid API key 排查</a>。</p>
+      <h3>模型列表是空的</h3>
+      <p>平台没有提供 <code>/v1/models</code>，或者返回的 ID 和你想用的不一样。在 Models 里用 Add model 手动添加模型 ID，例如 <code>claude-opus-5-5</code>、<code>claude-sonnet-5-5</code>。</p>
+      <h3>改了配置不生效</h3>
+      <p>大部分设置要重启才生效。完全退出客户端（macOS 用 Cmd+Q，Windows 从托盘退出）再打开。</p>
+      <h3>想切回官方订阅</h3>
+      <p>在 Configure Third-Party Inference 里清掉配置并保存，或者关掉开发者模式：Developer → Open Developer Config File，把 <code>"allowDevTools": true</code> 改成 <code>false</code>，保存后重启。</p>
+      <h3>账单比预期高</h3>
+      <p>Cowork 每一轮都会带上工具定义、系统提示和之前的对话，平台必须保留 <code>cache_control</code> 才能命中缓存。可以用 <a href="../calculator/">账单计算器</a> 看会话的缓存命中率。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>利益相关：本站由 TeamoRouter 团队维护。配置键名参考 Anthropic 官方文档 <a href="https://claude.com/docs/cowork/3p/gateway">Deploy Claude Desktop on 3P with an LLM gateway</a>。</p>
+      <p>MIT License · 内容更新于 2026 年 10 月</p>
+    </div>
+  </footer>
+</body>
+</html>

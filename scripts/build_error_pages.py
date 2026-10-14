@@ -260,6 +260,7 @@ def head(title: str, desc: str, url: str, depth: int, jsonld: dict) -> str:
       <a class="brand" href="{up}">Claude Code <span>国内指南</span></a>
       <nav class="nav" aria-label="主导航">
         <a href="{up}">指南</a>
+        <a href="{up}cowork/">Cowork</a>
         <a href="{up}errors/"{' aria-current="page"' if depth == 1 else ''}>报错速查</a>
         <a href="{up}calculator/">账单计算器</a>
         <a href="{up}config/">配置生成器</a>
@@ -400,7 +401,7 @@ def hub_page() -> str:
 
 
 def sitemap() -> str:
-    urls = ["", "errors/", "calculator/", "config/"] + [f"errors/{e['slug']}/" for e in ERRORS]
+    urls = ["", "cowork/", "errors/", "calculator/", "config/"] + [f"errors/{e['slug']}/" for e in ERRORS]
     body = "\n".join(f"  <url><loc>{SITE}{u}</loc></url>" for u in urls)
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{body}\n</urlset>\n'
 
