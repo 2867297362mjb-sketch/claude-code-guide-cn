@@ -1,6 +1,6 @@
 {
   "source": "https://api.teamorouter.com/v1/models/pricing",
-  "updated_at": "2026-10-28T06:50:34Z",
+  "updated_at": "2026-10-29T07:02:07Z",
   "unit": "USD per 1M tokens",
   "fields": {
     "list_cost": "Anthropic 官方价",
@@ -54,12 +54,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.31,
-        "cache_creation_1h": 0.496,
-        "cache_read": 0.0248,
-        "cached_input": 0.0248,
-        "input": 0.248,
-        "output": 1.24
+        "cache_creation": 0.24875,
+        "cache_creation_1h": 0.398,
+        "cache_read": 0.0199,
+        "cached_input": 0.0199,
+        "input": 0.199,
+        "output": 0.995
       },
       "display_name": "Claude Haiku 4.5",
       "id": "claude-haiku-4-5",
@@ -76,12 +76,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.29625,
-        "cache_creation_1h": 0.474,
-        "cache_read": 0.0237,
-        "cached_input": 0.0237,
-        "input": 0.237,
-        "output": 1.185
+        "cache_creation": 0.2475,
+        "cache_creation_1h": 0.396,
+        "cache_read": 0.0198,
+        "cached_input": 0.0198,
+        "input": 0.198,
+        "output": 0.99
       },
       "display_name": "Claude Haiku 4.5 (20251001)",
       "id": "claude-haiku-4-5-20251001",
@@ -124,12 +124,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.95,
-        "cache_creation_1h": 3.12,
-        "cache_read": 0.156,
-        "cached_input": 0.156,
-        "input": 1.56,
-        "output": 7.8
+        "cache_creation": 1.7875,
+        "cache_creation_1h": 2.86,
+        "cache_read": 0.143,
+        "cached_input": 0.143,
+        "input": 1.43,
+        "output": 7.15
       },
       "display_name": "Claude Opus 4.6",
       "id": "claude-opus-4-6",
@@ -212,12 +212,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.42,
-        "cache_creation_1h": 2.272,
-        "cache_read": 0.0568,
-        "cached_input": 0.0568,
-        "input": 1.136,
-        "output": 5.68
+        "cache_creation": 1.43,
+        "cache_creation_1h": 2.288,
+        "cache_read": 0.0572,
+        "cached_input": 0.0572,
+        "input": 1.144,
+        "output": 5.72
       },
       "display_name": "Claude Opus 5.5",
       "id": "claude-opus-5-5",
@@ -278,12 +278,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.715,
-        "cache_creation_1h": 1.144,
-        "cache_read": 0.0286,
-        "cached_input": 0.0286,
-        "input": 0.572,
-        "output": 2.86
+        "cache_creation": 0.7175,
+        "cache_creation_1h": 1.148,
+        "cache_read": 0.0287,
+        "cached_input": 0.0287,
+        "input": 0.574,
+        "output": 2.87
       },
       "display_name": "Claude sonnet 5.5",
       "id": "claude-sonnet-5-5",
