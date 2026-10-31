@@ -1,6 +1,6 @@
 {
   "source": "https://api.teamorouter.com/v1/models/pricing",
-  "updated_at": "2026-10-30T07:04:43Z",
+  "updated_at": "2026-10-31T06:58:44Z",
   "unit": "USD per 1M tokens",
   "fields": {
     "list_cost": "Anthropic 官方价",
@@ -54,12 +54,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.2775,
-        "cache_creation_1h": 0.444,
-        "cache_read": 0.0222,
-        "cached_input": 0.0222,
-        "input": 0.222,
-        "output": 1.11
+        "cache_creation": 0.2725,
+        "cache_creation_1h": 0.436,
+        "cache_read": 0.0218,
+        "cached_input": 0.0218,
+        "input": 0.218,
+        "output": 1.09
       },
       "display_name": "Claude Haiku 4.5",
       "id": "claude-haiku-4-5",
@@ -76,12 +76,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.25875,
-        "cache_creation_1h": 0.414,
-        "cache_read": 0.0207,
-        "cached_input": 0.0207,
-        "input": 0.207,
-        "output": 1.035
+        "cache_creation": 0.3475,
+        "cache_creation_1h": 0.556,
+        "cache_read": 0.0278,
+        "cached_input": 0.0278,
+        "input": 0.278,
+        "output": 1.39
       },
       "display_name": "Claude Haiku 4.5 (20251001)",
       "id": "claude-haiku-4-5-20251001",
@@ -212,12 +212,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.435,
-        "cache_creation_1h": 2.296,
-        "cache_read": 0.0574,
-        "cached_input": 0.0574,
-        "input": 1.148,
-        "output": 5.74
+        "cache_creation": 1.43,
+        "cache_creation_1h": 2.288,
+        "cache_read": 0.0572,
+        "cached_input": 0.0572,
+        "input": 1.144,
+        "output": 5.72
       },
       "display_name": "Claude Opus 5.5",
       "id": "claude-opus-5-5",
