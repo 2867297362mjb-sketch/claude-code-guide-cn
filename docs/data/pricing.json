@@ -1,6 +1,6 @@
 {
   "source": "https://api.teamorouter.com/v1/models/pricing",
-  "updated_at": "2026-11-04T07:28:56Z",
+  "updated_at": "2026-11-05T07:54:09Z",
   "unit": "USD per 1M tokens",
   "fields": {
     "list_cost": "Anthropic 官方价",
@@ -10,12 +10,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 3.75,
-        "cache_creation_1h": 6.0,
-        "cache_read": 0.3,
-        "cached_input": 0.3,
-        "input": 3.0,
-        "output": 15.0
+        "cache_creation": 3.7,
+        "cache_creation_1h": 5.92,
+        "cache_read": 0.296,
+        "cached_input": 0.296,
+        "input": 2.96,
+        "output": 14.8
       },
       "display_name": "Claude Fable 5",
       "id": "claude-fable-5",
@@ -32,12 +32,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 3.75,
-        "cache_creation_1h": 6.0,
-        "cache_read": 0.075,
-        "cached_input": 0.075,
-        "input": 3.0,
-        "output": 15.0
+        "cache_creation": 3.7125,
+        "cache_creation_1h": 5.94,
+        "cache_read": 0.07425,
+        "cached_input": 0.07425,
+        "input": 2.97,
+        "output": 14.85
       },
       "display_name": "Claude Fable 5.1",
       "id": "claude-fable-5-1",
@@ -54,12 +54,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.27,
-        "cache_creation_1h": 0.432,
-        "cache_read": 0.0216,
-        "cached_input": 0.0216,
-        "input": 0.216,
-        "output": 1.08
+        "cache_creation": 0.3525,
+        "cache_creation_1h": 0.564,
+        "cache_read": 0.0282,
+        "cached_input": 0.0282,
+        "input": 0.282,
+        "output": 1.41
       },
       "display_name": "Claude Haiku 4.5",
       "id": "claude-haiku-4-5",
@@ -76,12 +76,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.35875,
-        "cache_creation_1h": 0.574,
-        "cache_read": 0.0287,
-        "cached_input": 0.0287,
-        "input": 0.287,
-        "output": 1.435
+        "cache_creation": 0.305,
+        "cache_creation_1h": 0.488,
+        "cache_read": 0.0244,
+        "cached_input": 0.0244,
+        "input": 0.244,
+        "output": 1.22
       },
       "display_name": "Claude Haiku 4.5 (20251001)",
       "id": "claude-haiku-4-5-20251001",
@@ -102,12 +102,12 @@
         "threshold_tokens": 100000
       },
       "cost": {
-        "cache_creation": 0.03575,
-        "cache_creation_1h": 0.0572,
-        "cache_read": 0.00286,
-        "cached_input": 0.00286,
-        "input": 0.0286,
-        "output": 0.143
+        "cache_creation": 0.035875,
+        "cache_creation_1h": 0.0574,
+        "cache_read": 0.00287,
+        "cached_input": 0.00287,
+        "input": 0.0287,
+        "output": 0.1435
       },
       "display_name": "Claude haiku 5.5",
       "id": "claude-haiku-5-5",
@@ -124,12 +124,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.7875,
-        "cache_creation_1h": 2.86,
-        "cache_read": 0.143,
-        "cached_input": 0.143,
-        "input": 1.43,
-        "output": 7.15
+        "cache_creation": 1.79375,
+        "cache_creation_1h": 2.87,
+        "cache_read": 0.1435,
+        "cached_input": 0.1435,
+        "input": 1.435,
+        "output": 7.175
       },
       "display_name": "Claude Opus 4.6",
       "id": "claude-opus-4-6",
@@ -146,12 +146,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.7875,
-        "cache_creation_1h": 2.86,
-        "cache_read": 0.143,
-        "cached_input": 0.143,
-        "input": 1.43,
-        "output": 7.15
+        "cache_creation": 1.8,
+        "cache_creation_1h": 2.88,
+        "cache_read": 0.144,
+        "cached_input": 0.144,
+        "input": 1.44,
+        "output": 7.2
       },
       "display_name": "Claude Opus 4.7",
       "id": "claude-opus-4-7",
@@ -168,12 +168,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.7875,
-        "cache_creation_1h": 2.86,
-        "cache_read": 0.143,
-        "cached_input": 0.143,
-        "input": 1.43,
-        "output": 7.15
+        "cache_creation": 1.79375,
+        "cache_creation_1h": 2.87,
+        "cache_read": 0.1435,
+        "cached_input": 0.1435,
+        "input": 1.435,
+        "output": 7.175
       },
       "display_name": "Claude Opus 4.8",
       "id": "claude-opus-4-8",
@@ -190,12 +190,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.7875,
-        "cache_creation_1h": 2.86,
-        "cache_read": 0.143,
-        "cached_input": 0.143,
-        "input": 1.43,
-        "output": 7.15
+        "cache_creation": 1.79375,
+        "cache_creation_1h": 2.87,
+        "cache_read": 0.1435,
+        "cached_input": 0.1435,
+        "input": 1.435,
+        "output": 7.175
       },
       "display_name": "Claude Opus 5",
       "id": "claude-opus-5",
@@ -256,12 +256,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.715,
-        "cache_creation_1h": 1.144,
-        "cache_read": 0.0572,
-        "cached_input": 0.0572,
-        "input": 0.572,
-        "output": 2.86
+        "cache_creation": 0.7175,
+        "cache_creation_1h": 1.148,
+        "cache_read": 0.0574,
+        "cached_input": 0.0574,
+        "input": 0.574,
+        "output": 2.87
       },
       "display_name": "Claude Sonnet 5",
       "id": "claude-sonnet-5",
@@ -278,12 +278,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.715,
-        "cache_creation_1h": 1.144,
-        "cache_read": 0.0286,
-        "cached_input": 0.0286,
-        "input": 0.572,
-        "output": 2.86
+        "cache_creation": 0.72,
+        "cache_creation_1h": 1.152,
+        "cache_read": 0.0288,
+        "cached_input": 0.0288,
+        "input": 0.576,
+        "output": 2.88
       },
       "display_name": "Claude sonnet 5.5",
       "id": "claude-sonnet-5-5",
