@@ -1,6 +1,6 @@
 {
   "source": "https://api.teamorouter.com/v1/models/pricing",
-  "updated_at": "2026-11-14T07:35:46Z",
+  "updated_at": "2026-11-15T07:49:33Z",
   "unit": "USD per 1M tokens",
   "fields": {
     "list_cost": "Anthropic 官方价",
@@ -54,12 +54,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 3.01,
-        "cache_creation_1h": 4.816,
-        "cache_read": 0.0602,
-        "cached_input": 0.0602,
-        "input": 2.408,
-        "output": 12.04
+        "cache_creation": 3.0,
+        "cache_creation_1h": 4.8,
+        "cache_read": 0.06,
+        "cached_input": 0.06,
+        "input": 2.4,
+        "output": 12.0
       },
       "display_name": "Claude Fable 5.2",
       "id": "claude-fable-5-2",
@@ -76,12 +76,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.2975,
-        "cache_creation_1h": 0.476,
-        "cache_read": 0.0238,
-        "cached_input": 0.0238,
-        "input": 0.238,
-        "output": 1.19
+        "cache_creation": 0.31,
+        "cache_creation_1h": 0.496,
+        "cache_read": 0.0248,
+        "cached_input": 0.0248,
+        "input": 0.248,
+        "output": 1.24
       },
       "display_name": "Claude Haiku 4.5",
       "id": "claude-haiku-4-5",
@@ -98,12 +98,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 0.34,
-        "cache_creation_1h": 0.544,
-        "cache_read": 0.0272,
-        "cached_input": 0.0272,
-        "input": 0.272,
-        "output": 1.36
+        "cache_creation": 0.26625,
+        "cache_creation_1h": 0.426,
+        "cache_read": 0.0213,
+        "cached_input": 0.0213,
+        "input": 0.213,
+        "output": 1.065
       },
       "display_name": "Claude Haiku 4.5 (20251001)",
       "id": "claude-haiku-4-5-20251001",
@@ -256,12 +256,12 @@
     {
       "context_tier_pricing": null,
       "cost": {
-        "cache_creation": 1.07625,
-        "cache_creation_1h": 1.722,
-        "cache_read": 0.0861,
-        "cached_input": 0.0861,
-        "input": 0.861,
-        "output": 4.305
+        "cache_creation": 1.08,
+        "cache_creation_1h": 1.728,
+        "cache_read": 0.0864,
+        "cached_input": 0.0864,
+        "input": 0.864,
+        "output": 4.32
       },
       "display_name": "Claude Sonnet 4.6",
       "id": "claude-sonnet-4-6",
